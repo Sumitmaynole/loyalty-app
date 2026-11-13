@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loyalty Rewards</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+body { background:#1976D2; min-height:100vh; }
+.container { width:100%; min-height:100vh; background:#fff; padding:30px 20px; display:flex; flex-direction:column; justify-content:center; }
+.logo { font-size:70px; text-align:center; }
+h1 { text-align:center; color:#1976D2; margin-top:15px; }
+.subtitle { text-align:center; margin-top:10px; margin-bottom:35px; color:#666; font-size:16px; }
+label { font-weight:bold; display:block; margin-bottom:8px; margin-top:10px; }
+input { width:100%; padding:16px; border-radius:12px; border:1px solid #ccc; font-size:18px; outline:none; }
+input:focus { border:2px solid #1976D2; }
+button { margin-top:25px; width:100%; padding:18px; background:#1976D2; color:white; font-size:20px; border:none; border-radius:12px; cursor:pointer; }
+button:disabled { background:#888; }
+.loader { display:none; text-align:center; padding-top:80px; }
+.spinner { width:60px; height:60px; border:6px solid #ddd; border-top:6px solid #1976D2; border-radius:50%; margin:auto; animation:spin 1s linear infinite; }
+@keyframes spin { 100% { transform:rotate(360deg); } }
+.success { text-align:center; padding-top:40px; }
+.success h2 { margin-top:20px; color:#2E7D32; }
+.points { font-size:34px; font-weight:bold; margin:25px 0; color:#ff9800; }
+.progressBar { width:100%; height:18px; background:#ddd; border-radius:30px; overflow:hidden; margin-top:20px; margin-bottom:20px; }
+.progress { height:100%; background:#4CAF50; }
+.reward { background:#FFF3CD; padding:20px; border-radius:15px; font-size:22px; margin-top:25px; color:#795548; }
+.error { text-align:center; padding-top:70px; }
+.error h2 { margin-top:20px; color:#d32f2f; }
+.error p { margin-top:10px; color:#555; font-size:18px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="formSection">
+    <div class="logo">🎁</div>
+    <h1>Loyalty Rewards</h1>
+    <p class="subtitle">Complete 3 purchases and unlock ₹100 OFF!</p>
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Enter your name" required>
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile" maxlength="10" placeholder="Enter 10-digit Mobile Number" required>
+    <label>Referral Mobile Number (Optional)</label>
+    <input type="tel" id="referralCode" maxlength="10" placeholder="Enter friend's mobile no.">
+    <button id="submitBtn" onclick="submitForm()">Submit</button>
+  </div>
+  
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <h2 style="margin-top:25px;">Submitting...</h2>
+  </div>
+  
+  <div id="result"></div>
+</div>
+
+<script>
+// ==========================================
+// CLOUDFLARE WORKER BACKEND CONNECTION
+const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/"; 
+// ==========================================
+
+function submitForm(){
+  let name = document.getElementById("name").value.trim();
+  let mobile = document.getElementById("mobile").value.trim();
+  let referralCode = document.getElementById("referralCode").value.trim();
+  
+  // Read the code directly from the browser's URL address bar
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  if(name == ""){ alert("Enter your name"); return; }
+  if(!/^[0-9]{10}$/.test(mobile)){ alert("Enter a valid 10-digit Mobile Number"); return; }
+  if(!code) { alert("Missing QR Code ID. Please scan the code again."); return; }
+
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("submitBtn").innerHTML = "Submitting...";
+  document.getElementById("formSection").style.display = "none";
+  document.getElementById("loader").style.display = "block";
+
+  let payload = { name: name, mobile: mobile, referralCode: referralCode, code: code };
+
+  // Send the data securely to your Cloudflare backend
+  fetch(GOOGLE_BACKEND_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8", 
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => response.json())
+  .then(data => showResult(data))
+  .catch(error => {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("result").innerHTML = `<div class="error"><h2>Connection Error</h2><p>Please check your internet and try again.</p></div>`;
+  });
+}
+
+function showResult(res){
+  document.getElementById("loader").style.display = "none";
+
+  if(res.status == "invalid"){
+    document.getElementById("result").innerHTML = `<div class="error"><div style="font-size:80px;">⚠️</div><h2>Invalid QR Code</h2><p>Code: ${res.receivedCode}</p></div>`;
+    return;
+  }
+  if(res.status == "used"){
+    document.getElementById("result").innerHTML = `<div class="error"><div style="font-size:80px;">❌</div><h2>QR Already Redeemed</h2></div>`;
+    return;
+  }
+
+  let percent = Math.min((res.points/3)*100, 100);
+
+  if(res.reward){
+    document.getElementById("result").innerHTML = `
+    <div class="success"><div style="font-size:90px;">🎉</div><h2>Congratulations ${res.name}!</h2>
+    <div class="points">⭐ ${res.points}/3</div><div class="progressBar"><div class="progress" style="width:${percent}%"></div></div>
+    <div class="reward">🎁 <b>₹100 OFF UNLOCKED!</b><br><br>Show this to our staff!</div></div>`;
+  } else {
+    document.getElementById("result").innerHTML = `
+    <div class="success"><div style="font-size:90px;">✅</div><h2>Thank You ${res.name}!</h2>
+    <div class="points">⭐ ${res.points}/3</div><div class="progressBar"><div class="progress" style="width:${percent}%"></div></div></div>`;
+  }
+}
+</script>
+</body>
+</html>
