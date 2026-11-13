@@ -13,7 +13,7 @@
   /* Main Container */
   .container { position: relative; width: 100%; max-width: 450px; background: #fff; min-height: 100vh; padding: 50px 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; }
   
-  /* Floating Background Animation (Moved inside container for mobile visibility) */
+  /* Floating Background Animation (Visible on mobile) */
   .floating-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
   .float-icon { position: absolute; font-size: 65px; filter: grayscale(100%); opacity: 0.05; animation: floatUp linear infinite; }
   @keyframes floatUp {
@@ -72,7 +72,7 @@
 <body>
 
 <div class="container">
-  <!-- Floating Background Elements (Now inside the container) -->
+  <!-- Floating Background Elements -->
   <div class="floating-bg">
     <div class="float-icon icon-1">👕</div>
     <div class="float-icon icon-2">👖</div>
@@ -117,6 +117,7 @@
 </div>
 
 <script>
+// RESTORED: The exact working logic from the old code
 const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/"; 
 
 function submitForm(){
@@ -155,4 +156,36 @@ function showResult(res){
   let resultDiv = document.getElementById("result");
 
   if(res.status == "invalid"){
-    resultDiv.innerHTML = `<div class="result-screen"><h2 class="error-text">Invalid Tag</h2><p style="margin
+    resultDiv.innerHTML = `<div class="result-screen"><h2 class="error-text">Invalid Tag</h2><p style="margin-top:10px; color:#777;">Code: ${res.receivedCode}</p></div>`;
+    return;
+  }
+  if(res.status == "used"){
+    resultDiv.innerHTML = `<div class="result-screen"><h2 class="error-text">Tag Already Scanned</h2><p style="margin-top:10px; color:#777;">This item has already been claimed.</p></div>`;
+    return;
+  }
+
+  let percent = Math.min((res.points/3)*100, 100);
+  
+  let htmlTemplate = `
+    <div class="result-screen">
+      <div class="greeting">Thank You, <br>${res.name}</div>
+      <div class="points-display">Current Purchases</div>
+      <div class="points-number">${res.points} / 3</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+  `;
+
+  if(res.reward){
+    htmlTemplate += `
+      <div class="reward-box">
+        <div class="reward-text">4TH ITEM UNLOCKED!</div>
+        <div class="reward-sub">You've earned your next item at the lowest price. Show this screen at checkout!</div>
+      </div>
+    `;
+  }
+  
+  htmlTemplate += `</div>`;
+  resultDiv.innerHTML = htmlTemplate;
+}
+</script>
+</body>
+</html>
