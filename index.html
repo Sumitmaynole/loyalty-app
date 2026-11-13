@@ -47,9 +47,10 @@
   button:hover { background: #333; }
   button:disabled { background: #ccc; cursor: not-allowed; }
   
-  /* Loader */
+  /* Loader - FIXED SPIN ANIMATION */
   .loader { display: none; text-align: center; padding-top: 40px; }
   .spinner { width: 40px; height: 40px; border: 2px solid #f3f3f3; border-top: 2px solid #000; border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   
   /* Success & Rewards */
   .result-screen { text-align: center; padding-top: 20px; animation: fadeIn 0.5s; }
@@ -117,7 +118,6 @@
 </div>
 
 <script>
-// RESTORED: The exact working logic from the old code
 const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/"; 
 
 function submitForm(){
