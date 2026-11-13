@@ -8,12 +8,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background-color: #f4f4f4; color: #111; font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
-  .container { width: 100%; max-width: 450px; background: #fff; min-height: 100vh; padding: 50px 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+  body { background-color: #f4f4f4; color: #111; font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+  
+  /* Floating Background Animation */
+  .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+  .float-icon { position: absolute; font-size: 60px; filter: grayscale(100%); opacity: 0.04; animation: floatUp linear infinite; }
+  @keyframes floatUp {
+    0% { transform: translateY(110vh) rotate(0deg); }
+    100% { transform: translateY(-20vh) rotate(360deg); }
+  }
+  .icon-1 { left: 10%; animation-duration: 18s; animation-delay: 0s; }
+  .icon-2 { left: 80%; animation-duration: 22s; animation-delay: -5s; }
+  .icon-3 { left: 25%; animation-duration: 20s; animation-delay: -10s; }
+  .icon-4 { left: 65%; animation-duration: 25s; animation-delay: -2s; }
+  .icon-5 { left: 45%; animation-duration: 19s; animation-delay: -7s; }
+
+  /* Main Container */
+  .container { width: 100%; max-width: 450px; background: #fff; min-height: 100vh; padding: 50px 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.08); z-index: 1; }
   
   /* Brand Typography */
-  .brand-logo { font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; color: #000; }
-  .subtitle { text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #777; margin-bottom: 40px; font-weight: 300; }
+  .brand-logo { font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; color: #000; }
+  .title { text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 25px; font-weight: 400; }
+  .subtitle { text-align: center; font-size: 13px; line-height: 1.6; color: #000; margin-bottom: 40px; font-weight: 600; padding: 15px; background: #fafafa; border-left: 3px solid #000; }
+  .subtitle span { display: block; font-size: 11px; color: #777; font-weight: 400; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
   
   /* Inputs */
   .input-group { margin-bottom: 25px; }
@@ -45,21 +62,31 @@
   
   .reward-box { background: #FAF7F2; border: 1px solid #D4AF37; padding: 25px 20px; margin-top: 30px; }
   .reward-text { color: #B58500; font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 10px; }
-  .reward-sub { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+  .reward-sub { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; line-height:1.4; }
   
   .error-text { color: #D32F2F; font-weight: 600; margin-top: 20px; }
 </style>
 </head>
 <body>
 
+<!-- Floating Background Elements -->
+<div class="floating-bg">
+  <div class="float-icon icon-1">👕</div>
+  <div class="float-icon icon-2">👖</div>
+  <div class="float-icon icon-3">👗</div>
+  <div class="float-icon icon-4">👕</div>
+  <div class="float-icon icon-5">👖</div>
+</div>
+
 <div class="container">
   <div id="formSection">
-    <!-- You can change "YOUR BRAND" to your actual shop name -->
     <div class="brand-logo">By Shrikant.</div>
     <div class="title">Exclusive Member Rewards</div>
-   <div class="subtitle">BUY 3 ITEMS & GET THE 4TH AT THE LOWEST PRICE! 🎉
-
-Shop More, Save More! 🛍️</div>
+    
+    <div class="subtitle">
+      Buy 3 items & get the 4th at the lowest price! 🎉
+      <span>Shop More, Save More! 🛍️</span>
+    </div>
     
     <div class="input-group">
       <label>Full Name</label>
@@ -88,7 +115,6 @@ Shop More, Save More! 🛍️</div>
 </div>
 
 <script>
-// Your exact Cloudflare backend URL
 const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/"; 
 
 function submitForm(){
@@ -148,8 +174,8 @@ function showResult(res){
   if(res.reward){
     htmlTemplate += `
       <div class="reward-box">
-        <div class="reward-text">₹100 OFF UNLOCKED</div>
-        <div class="reward-sub">Please show this screen at checkout</div>
+        <div class="reward-text">4TH ITEM UNLOCKED!</div>
+        <div class="reward-sub">You've earned your next item at the lowest price. Show this screen at checkout!</div>
       </div>
     `;
   }
