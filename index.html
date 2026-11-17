@@ -1,78 +1,291 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Exclusive Rewards</title>
-<!-- Elegant fashion fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background-color: #f4f4f4; color: #111; font-family: 'Montserrat', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
-  
-  /* Main Container */
-  .container { position: relative; width: 100%; max-width: 450px; background: #fff; min-height: 100vh; padding: 50px 30px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.08); overflow: hidden; }
-  
-  /* Floating Menswear Background Animation */
-  .floating-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-  .float-icon { position: absolute; font-size: 65px; filter: grayscale(100%); opacity: 0.05; animation: floatUp linear infinite; }
-  @keyframes floatUp {
-    0% { transform: translateY(110vh) rotate(0deg); }
-    100% { transform: translateY(-20vh) rotate(360deg); }
-  }
-  .icon-1 { left: 10%; animation-duration: 18s; animation-delay: 0s; }
-  .icon-2 { left: 75%; animation-duration: 22s; animation-delay: -5s; }
-  .icon-3 { left: 40%; animation-duration: 20s; animation-delay: -10s; }
-  .icon-4 { left: 60%; animation-duration: 25s; animation-delay: -2s; }
-  .icon-5 { left: 20%; animation-duration: 19s; animation-delay: -7s; }
 
-  /* Keep form elements above the floating animation */
-  #formSection, #loader, #result { position: relative; z-index: 2; }
-  
-  /* Brand Typography */
-  .brand-logo { font-family: 'Playfair Display', serif; font-size: 32px; text-align: center; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; color: #000; }
-  .title { text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 25px; font-weight: 400; }
-  .subtitle { text-align: center; font-size: 13px; line-height: 1.6; color: #000; margin-bottom: 40px; font-weight: 600; padding: 15px; background: rgba(250, 250, 250, 0.8); border-left: 3px solid #000; backdrop-filter: blur(2px); }
-  .subtitle span { display: block; font-size: 11px; color: #777; font-weight: 400; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
-  
-  /* Inputs */
-  .input-group { margin-bottom: 25px; }
-  label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #000; margin-bottom: 8px; font-weight: 600; }
-  input { width: 100%; padding: 15px 10px; border: none; border-bottom: 1px solid #ccc; font-size: 16px; font-family: 'Montserrat', sans-serif; background: transparent; outline: none; transition: border-color 0.3s; }
-  input:focus { border-bottom: 2px solid #000; }
-  input::placeholder { color: #bbb; font-weight: 300; font-size: 14px; }
-  
-  /* Elegant Button */
-  button { width: 100%; padding: 18px; background: #000; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
-  button:hover { background: #333; }
-  button:disabled { background: #ccc; cursor: not-allowed; }
-  
-  /* Loader */
-  .loader { display: none; text-align: center; padding-top: 40px; }
-  .spinner { width: 40px; height: 40px; border: 2px solid #f3f3f3; border-top: 2px solid #000; border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite; }
-  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  
-  /* Success & Rewards */
-  .result-screen { text-align: center; padding-top: 20px; animation: fadeIn 0.5s; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  
-  .greeting { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 10px; }
-  .points-display { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #555; margin-top: 30px; }
-  .points-number { font-size: 40px; font-weight: 300; color: #000; margin: 10px 0; }
-  
-  .progress-bar { width: 100%; height: 4px; background: #eee; margin: 20px 0; position: relative; }
-  .progress-fill { height: 100%; background: #000; transition: width 1s ease-in-out; }
-  
-  .reward-box { background: rgba(250, 247, 242, 0.9); border: 1px solid #D4AF37; padding: 25px 20px; margin-top: 30px; backdrop-filter: blur(2px); }
-  .reward-text { color: #B58500; font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 10px; }
-  .reward-sub { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #666; line-height:1.4; }
-  
-  .error-text { color: #D32F2F; font-weight: 600; margin-top: 20px; }
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Main Container */
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  background: #fff;
+  min-height: 100vh;
+  padding: 50px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* Floating Background Animation */
+.floating-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.float-icon {
+  position: absolute;
+  font-size: 65px;
+  filter: grayscale(100%);
+  opacity: 0.05;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(110vh) rotate(0deg); }
+  100% { transform: translateY(-20vh) rotate(360deg); }
+}
+
+.icon-1 { left: 10%; animation-duration: 18s; animation-delay: 0s; }
+.icon-2 { left: 75%; animation-duration: 22s; animation-delay: -5s; }
+.icon-3 { left: 40%; animation-duration: 20s; animation-delay: -10s; }
+.icon-4 { left: 60%; animation-duration: 25s; animation-delay: -2s; }
+.icon-5 { left: 20%; animation-duration: 19s; animation-delay: -7s; }
+
+/* Keep content above animation */
+#formSection, #loader, #result {
+  position: relative;
+  z-index: 2;
+}
+
+/* Brand Typography */
+.brand-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 5px;
+  color: #000;
+}
+
+.title {
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #999;
+  margin-bottom: 25px;
+  font-weight: 400;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #000;
+  margin-bottom: 40px;
+  font-weight: 600;
+  padding: 15px;
+  background: rgba(250, 250, 250, 0.8);
+  border-left: 3px solid #000;
+  backdrop-filter: blur(2px);
+}
+
+.subtitle span {
+  display: block;
+  font-size: 11px;
+  color: #777;
+  font-weight: 400;
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Inputs */
+.input-group {
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #000;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 15px 10px;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-bottom: 2px solid #000;
+}
+
+input::placeholder {
+  color: #bbb;
+  font-weight: 300;
+  font-size: 14px;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 18px;
+  background: #000;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #333;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Loader */
+.loader {
+  display: none;
+  text-align: center;
+  padding-top: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success & Rewards */
+.result-screen {
+  text-align: center;
+  padding-top: 20px;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.greeting {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.points-display {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #555;
+  margin-top: 30px;
+}
+
+.points-number {
+  font-size: 40px;
+  font-weight: 300;
+  color: #000;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #eee;
+  margin: 20px 0;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #000;
+  transition: width 1s ease-in-out;
+}
+
+/* Reward Box */
+.reward-box {
+  background: rgba(250, 247, 242, 0.9);
+  border: 1px solid #D4AF37;
+  padding: 25px 20px;
+  margin-top: 30px;
+  backdrop-filter: blur(2px);
+}
+
+.reward-text {
+  color: #B58500;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.reward-sub {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.error-text {
+  color: #D32F2F;
+  font-weight: 600;
+  margin-top: 20px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
+
   <!-- Floating Background Elements -->
   <div class="floating-bg">
     <div class="float-icon icon-1">👕</div>
@@ -82,109 +295,188 @@
     <div class="float-icon icon-5">👕</div>
   </div>
 
+  <!-- Registration Form -->
   <div id="formSection">
+
     <div class="brand-logo">By Shrikant.</div>
     <div class="title">Exclusive Member Rewards</div>
-    
+
     <div class="subtitle">
       Buy 3 items & get 1 free! 🎉
       <span>Shop More, Save More! 🛍️</span>
     </div>
-    
+
     <div class="input-group">
       <label>Full Name</label>
       <input type="text" id="name" placeholder="Enter your name" required>
     </div>
-    
+
     <div class="input-group">
       <label>Mobile Number</label>
       <input type="tel" id="mobile" maxlength="10" placeholder="10-digit number" required>
     </div>
-    
+
     <div class="input-group">
       <label>Referral Code (Optional)</label>
       <input type="tel" id="referralCode" maxlength="10" placeholder="Friend's mobile number">
     </div>
-    
+
     <button id="submitBtn" onclick="submitForm()">Claim Purchase</button>
+
   </div>
-  
+
+  <!-- Loading Screen -->
   <div class="loader" id="loader">
     <div class="spinner"></div>
-    <div style="margin-top:20px; font-size:12px; text-transform:uppercase; letter-spacing:2px; color:#777;">Verifying...</div>
+    <div style="margin-top:20px; font-size:12px; text-transform:uppercase; letter-spacing:2px; color:#777;">
+      Verifying...
+    </div>
   </div>
-  
+
+  <!-- Result Screen -->
   <div id="result"></div>
+
 </div>
 
 <script>
-const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/"; 
 
-function submitForm(){
+const GOOGLE_BACKEND_URL = "https://shop-loyalty-backend.rajexcel0.workers.dev/";
+
+
+/* SUBMIT FORM */
+
+function submitForm() {
+
   let name = document.getElementById("name").value.trim();
   let mobile = document.getElementById("mobile").value.trim();
   let referralCode = document.getElementById("referralCode").value.trim();
-  
+
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
-  if(name == ""){ alert("Please enter your name."); return; }
-  if(!/^[0-9]{10}$/.test(mobile)){ alert("Please enter a valid 10-digit mobile number."); return; }
-  if(!code) { alert("Missing Item ID. Please scan the QR code directly."); return; }
+  if (name == "") {
+    alert("Please enter your name.");
+    return;
+  }
+
+  if (!/^[0-9]{10}$/.test(mobile)) {
+    alert("Please enter a valid 10-digit mobile number.");
+    return;
+  }
+
+  if (!code) {
+    alert("Missing Item ID. Please scan the QR code directly.");
+    return;
+  }
 
   document.getElementById("submitBtn").disabled = true;
   document.getElementById("formSection").style.display = "none";
   document.getElementById("loader").style.display = "block";
 
-  let payload = { name: name, mobile: mobile, referralCode: referralCode, code: code };
+  let payload = {
+    name: name,
+    mobile: mobile,
+    referralCode: referralCode,
+    code: code
+  };
 
   fetch(GOOGLE_BACKEND_URL, {
     method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
     body: JSON.stringify(payload)
   })
+
   .then(response => response.json())
   .then(data => showResult(data))
+
   .catch(error => {
     document.getElementById("loader").style.display = "none";
-    document.getElementById("result").innerHTML = `<div class="result-screen error-text"><p>Connection Error. Please check your internet and try again.</p></div>`;
+
+    document.getElementById("result").innerHTML = `
+      <div class="result-screen error-text">
+        <p>Connection Error. Please check your internet and try again.</p>
+      </div>
+    `;
   });
 }
 
-function showResult(res){
+
+/* DISPLAY RESULT */
+
+function showResult(res) {
+
   document.getElementById("loader").style.display = "none";
+
   let resultDiv = document.getElementById("result");
 
-  if(res.status == "invalid"){
-    resultDiv.innerHTML = `<div class="result-screen"><h2 class="error-text">Invalid Tag</h2><p style="margin-top:10px; color:#777;">Code: ${res.receivedCode}</p></div>`;
-    return;
-  }
-  if(res.status == "used"){
-    resultDiv.innerHTML = `<div class="result-screen"><h2 class="error-text">Tag Already Scanned</h2><p style="margin-top:10px; color:#777;">This item has already been claimed.</p></div>`;
+  if (res.status == "invalid") {
+
+    resultDiv.innerHTML = `
+      <div class="result-screen">
+        <h2 class="error-text">Invalid Tag</h2>
+        <p style="margin-top:10px; color:#777;">Code: ${res.receivedCode}</p>
+      </div>
+    `;
+
     return;
   }
 
-  let percent = Math.min((res.points/3)*100, 100);
-  
+  if (res.status == "used") {
+
+    resultDiv.innerHTML = `
+      <div class="result-screen">
+        <h2 class="error-text">Tag Already Scanned</h2>
+        <p style="margin-top:10px; color:#777;">
+          This item has already been claimed.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  let percent = Math.min((res.points / 3) * 100, 100);
+
   let htmlTemplate = `
     <div class="result-screen">
+
       <div class="greeting">Thank You, <br>${res.name}</div>
+
       <div class="points-display">Current Purchases</div>
+
       <div class="points-number">${res.points} / 3</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
   `;
 
-  if(res.reward){
+  /* BUY 3 GET 1 FREE REWARD */
+
+  if (res.reward) {
+
     htmlTemplate += `
       <div class="reward-box">
-      <div class="reward-text">4TH ITEM FREE!</div>
-<div class="reward-sub">Congratulations! You've unlocked 1 FREE item. Show this screen at checkout!</div>
+
+        <div class="reward-text">4TH ITEM FREE!</div>
+
+        <div class="reward-sub">
+          Congratulations! You've unlocked 1 FREE item.
+          Show this screen at checkout!
+        </div>
+
+      </div>
     `;
   }
-  
+
   htmlTemplate += `</div>`;
+
   resultDiv.innerHTML = htmlTemplate;
 }
+
 </script>
+
 </body>
 </html>
